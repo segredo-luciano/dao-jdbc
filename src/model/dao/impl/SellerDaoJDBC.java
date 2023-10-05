@@ -84,13 +84,32 @@ public class SellerDaoJDBC implements SellerDao {
 			preparedStatement.executeUpdate();
 		} catch(SQLException sqle) {
 			throw new DbException(sqle.getMessage());
+		} finally {
+			DB.closeResultSet(resultSet);
+			DB.closeStatement(preparedStatement);
 		}
 	}
 
 	@Override
-	public void deleteById(Integer id) {
-		// TODO Auto-generated method stub
+	public void deleteById(Integer id) {		
+		PreparedStatement preparedStatement = null;
+		try {
+			preparedStatement = connection.prepareStatement(
+				"delete from seller"
+				+ " where id = ?"	
+			);
+		preparedStatement.setInt(1, id);
+		int rows = preparedStatement.executeUpdate();
 		
+		if(rows == 0) {
+			throw new SQLException("this id does not exist!");
+		}
+			
+		} catch(SQLException sqle) {
+			throw new DbException(sqle.getMessage());
+		} finally {			
+			DB.closeStatement(preparedStatement);
+		}
 	}
 
 	@Override
